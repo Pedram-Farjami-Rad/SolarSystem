@@ -1,6 +1,8 @@
 #include <GL/glut.h>
 
 GLfloat angle, angle1, angle2;
+GLfloat speedMultiplier = 1.0f; // Speed multiplier for rotation
+bool isRotating = true; // Flag to control rotation
 
 void display() {
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -37,10 +39,30 @@ void init() {
 }
 
 void test() {
-	angle += 1.0;
-	angle1 += 2.0;
-	angle2 += 0.5;
-	glutPostRedisplay();
+	if (isRotating) {
+		angle += 1.0 * speedMultiplier;
+		angle1 += 2.0 * speedMultiplier;
+		angle2 += 0.5 * speedMultiplier;
+		glutPostRedisplay();
+	}
+}
+
+void keyboard(unsigned char key, int x, int y) {
+	switch (key) {
+	case '+':// increase speed
+		speedMultiplier += 0.1f;
+		break;
+	case '-':// decrease speed
+		speedMultiplier -= 0.1f;
+		if (speedMultiplier < 0.1f) speedMultiplier = 0.1f; // Prevent negative speed
+		break;
+	case 's':case 'S': // toggle rotation
+		isRotating = !isRotating;
+		break;
+	case '0':// Reset speed to default
+		speedMultiplier = 1.0f;
+		break;
+	}
 }
 
 void main(int argc, char** argv) {
@@ -51,6 +73,7 @@ void main(int argc, char** argv) {
 	glutCreateWindow("Solar System");
 	glutIdleFunc(test);
 	glutDisplayFunc(display);
+	glutKeyboardFunc(keyboard);
 	init();
 	glutMainLoop();
 }
